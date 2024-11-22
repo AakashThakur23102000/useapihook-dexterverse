@@ -1,0 +1,29 @@
+{
+  "name": "@dexterverse/useapihook",
+  "version": "1.0.0",
+  "description": "This hook is designed for the management of API calls.",
+  "main": "index.ts",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/AakashThakur23102000/-dexterverse-useapihook.git"
+  },
+  "keywords": [
+    "useApiHook"
+  ],
+  "author": "AakashThakur23102000",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/AakashThakur23102000/-dexterverse-useapihook/issues"
+  },
+  "homepage": "https://github.com/AakashThakur23102000/-dexterverse-useapihook#readme",
+  "dependencies": {
+    "react": "*"
+  },
+  "devDependencies": {
+    "@types/react": "*"
+  }
+}
