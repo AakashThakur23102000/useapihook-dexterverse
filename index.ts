@@ -130,7 +130,7 @@ export const useApiHook = ({
         refetchApiCustomReturnFunction?: Function | null,
         refetchOnErrorReturnFunction?: Function | null
     ) => {
-        if (refetchInitialLoadingState) {
+        if (refetchInitialLoadingState!==undefined) {
             if (refetchInitialLoadingState !== loadingState) {
                 setLoadingState(refetchInitialLoadingState);
             }
