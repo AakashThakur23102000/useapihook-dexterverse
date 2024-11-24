@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 // Parameter interface 
 interface useApiHookInterface {
     apiCallingFunction: Function,
+    apiCallingFunctionQuery?: any[],
     type?: "API" | "FORMDATA",
     apiPayload: any[],
     apiCustomReturnFunction: Function,
@@ -14,15 +15,13 @@ interface useApiHookInterface {
 export const useApiHook = ({
     apiCallingFunction,
     type = "API",
+    apiCallingFunctionQuery = [],
     apiPayload = [],
     runOnTimeOfScreenMount,
     initialLoadingState,
     apiCustomReturnFunction,
     onErrorReturnFunction,
 }: useApiHookInterface) => {
-
-
-    console.log("------------- This hook is working ---------------");
 
     // Loading state as a useState hook to trigger re-renders
     const [loadingState, setLoadingState] = useState(initialLoadingState);
@@ -45,14 +44,13 @@ export const useApiHook = ({
     ) => {
         if (type === "API") {
             try {
-                var apiCallingFunctionObj = await apiCallingFunction();
+                var apiCallingFunctionObj = await apiCallingFunction(apiCallingFunctionQuery?.[0] || {});
                 var apiFetchingOptionsObj: any = {};
-
                 apiFetchingOptionsObj["method"] = apiCallingFunctionObj.method
                 apiFetchingOptionsObj["headers"] = apiCallingFunctionObj.customHeaders ?
                     apiCallingFunctionObj.customHeaders :
                     fetchHeaders;
-                if (apiCallingFunctionObj.method !== "GET") {
+                if ((apiCallingFunctionObj.method !== "GET") && (apiCallingFunctionObj.method !== "DELETE")) {
                     apiFetchingOptionsObj["body"] = JSON.stringify(
                         refetchApiPayload?.[0] || apiPayload?.[0] || {}
                     )
@@ -70,6 +68,13 @@ export const useApiHook = ({
                     } else {
                         finalResult = await apiCustomReturnFunction(apiResponseAfterConverted);
                     }
+                    if (apiCallingFunctionObj.successCodeWithAction) {
+                        for (const item of apiCallingFunctionObj.successCodeWithAction) {
+                            if (apiResponseWithoutConverted.status === item.code) {
+                                await item.action();
+                            }
+                        };
+                    }
                     setApiData(finalResult); // Set the API data on success
                     setApiError(null);       // Clear any previous error
                 } else {
@@ -78,6 +83,14 @@ export const useApiHook = ({
                         finalError = await refetchOnErrorReturnFunction(apiResponseAfterConverted);
                     } else {
                         finalError = await onErrorReturnFunction(apiResponseAfterConverted);
+                    }
+
+                    if (apiCallingFunctionObj.errorCodeWithAction) {
+                        for (const item of apiCallingFunctionObj.errorCodeWithAction) {
+                            if (apiResponseWithoutConverted.status === item.code) {
+                                await item.action();
+                            }
+                        };
                     }
                     setApiError(finalError);
                     setApiData(null);
@@ -112,14 +125,21 @@ export const useApiHook = ({
     };
 
     const refetchingApiFunction = async (
-        refetchInitialLoadingState: boolean,
-        refetchApiPayload: any[] = [],
+        refetchInitialLoadingState?: boolean,
+        refetchApiPayload: any[] = apiPayload,
         refetchApiCustomReturnFunction?: Function | null,
         refetchOnErrorReturnFunction?: Function | null
     ) => {
-        if (refetchInitialLoadingState !== loadingState) {
-            setLoadingState(refetchInitialLoadingState);
+        if (refetchInitialLoadingState) {
+            if (refetchInitialLoadingState !== loadingState) {
+                setLoadingState(refetchInitialLoadingState);
+            }
+        } else {
+            if (initialLoadingState !== loadingState) {
+                setLoadingState(initialLoadingState);
+            }
         }
+
         await apiFetching(refetchApiPayload, refetchApiCustomReturnFunction, refetchOnErrorReturnFunction);
     }
 
