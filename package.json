@@ -1,6 +1,6 @@
 {
   "name": "useapihook-dexterverse",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "description": "This hook is designed for the management of API calls.",
   "main": "index.ts",
   "type": "module",
@@ -12,7 +12,9 @@
     "url": "git+ssh://git@github.com:AakashThakur23102000/useapihook-dexterverse.git"
   },
   "keywords": [
-    "useApiHook","api","apiHook"
+    "useApiHook",
+    "api",
+    "apiHook"
   ],
   "author": "AakashThakur23102000",
   "license": "Apache-2.0",
