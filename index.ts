@@ -50,6 +50,9 @@ export const useApiHook = ({
                 apiFetchingOptionsObj["headers"] = apiCallingFunctionObj.customHeaders ?
                     apiCallingFunctionObj.customHeaders :
                     fetchHeaders;
+                if (apiCallingFunctionObj.token) {
+                    apiFetchingOptionsObj["headers"]["Authorization"] = apiCallingFunctionObj.token;
+                }
                 if ((apiCallingFunctionObj.method !== "GET") && (apiCallingFunctionObj.method !== "DELETE")) {
                     apiFetchingOptionsObj["body"] = JSON.stringify(
                         refetchApiPayload?.[0] || apiPayload?.[0] || {}
@@ -130,7 +133,7 @@ export const useApiHook = ({
         refetchApiCustomReturnFunction?: Function | null,
         refetchOnErrorReturnFunction?: Function | null
     ) => {
-        if (refetchInitialLoadingState!==undefined) {
+        if (refetchInitialLoadingState !== undefined) {
             if (refetchInitialLoadingState !== loadingState) {
                 setLoadingState(refetchInitialLoadingState);
             }
