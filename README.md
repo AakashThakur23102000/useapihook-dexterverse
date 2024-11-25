@@ -158,18 +158,75 @@ export default MyComponent;
 ```
 
 
-
+## Explanation
 
 | Prop Name                       | Description | Code Example |
 |----------------------------------|-------------|--------------|
 | `apiCallingFunction`             | The API function that will be called inside the hook. This function handles making the actual API request. Example: `FIRST_API_FUNC` or `SECOND_API_FUNC`. | `apiCallingFunction: FIRST_API_FUNC` |
-| `apiCallingFunctionQuery`        | A list of query parameters or additional arguments passed to the `apiCallingFunction`. This can be used as a prop named apiCallingFunctionQuery in the Step 2.<br/> ***Note- The bracket is just the field where you put your query object so always wrap it with the brackets. | `apiCallingFunctionQuery: [{ navigation: navigation }]` |
-| `apiPayload`                     | The payload that will be sent with the API request. For example, `[{ name: "Aakash" }]` or `[{ demo: "Demo" }]`<br/> ***Note- The bracket is just the field where you put your payload so always wrap it with the brackets.  | `apiPayload: [{ name: "Aakash" }]` |
+| `apiCallingFunctionQuery`        | A list of query parameters or additional arguments passed to the `apiCallingFunction`. This can be used as a prop named apiCallingFunctionQuery in the Step 2.<br/> ***Note: The bracket is simply the field where you put your query object, so always wrap it in brackets. | `apiCallingFunctionQuery: [{ navigation: navigation }]` |
+| `apiPayload`                     | The payload that will be sent with the API request. For example, `[{ name: "Aakash" }]` or `[{ demo: "Demo" }]`<br/> ***Note: The bracket is simply the field where you put your payload object, so always wrap it in brackets.  | `apiPayload: [{ name: "Aakash" }]` |
 | `runOnTimeOfScreenMount`         | A boolean flag to specify if the API call should be triggered when the component mounts. If `true`, the API call is made on component mount. | `runOnTimeOfScreenMount: true` |
 | `initialLoadingState`            | A boolean flag to indicate the initial state of the API call. If `true`, it shows the loading indicator when the hook is initialized. | `initialLoadingState: true` |
-| `apiCustomReturnFunction`        | A custom function to handle the successful API response data. It allows you to modify or process the response before it's returned. Example: `(data: any) => { return data; }`. | `apiCustomReturnFunction: (data: any) => { return data; }` |
-| `onErrorReturnFunction`          | A custom function to handle errors. This function will be called if the API request fails. Example: `(err: any) => { return err; }`. | `onErrorReturnFunction: (err: any) => { return err; }` |
-| `apiData`                        | The response data from the API call, which is returned once the API request is successful.<br/>***Note - These can be renamed accordingly.<br/> Example: `firstApiData` or `secondApiData`. | `apiData: firstApiData` |
-| `loadingState`                   | A boolean indicating whether the API call is still loading or not.<br/>***Note - These can be renamed accordingly.<br/> Example: `firstApiLoading` or `secondApiLoading`. | `loadingState: firstApiLoading` |
-| `refetchingApiFunction`          | A function that can be used to re-trigger the API call, usually in case of failure or to refresh or recall the api.<br/>***Note - These can be renamed accordingly.<br/> Example: `firstRefetchFunction` or `secondRefetchFunction`. | `refetchingApiFunction: firstRefetchFunction` |
-| `apiError`                       | Stores the error returned from the API request, if any.<br/>***Note - These can be renamed accordingly.<br/> Example: `firstApiError` or `secondApiError`. | `apiError: firstApiError` |
+| `apiCustomReturnFunction`        | A custom function to handle the successful API response data. It allows you to modify or process the response before it's returned.  | `apiCustomReturnFunction: (data: any) => { return data; }` |
+| `onErrorReturnFunction`          | A custom function to handle errors. This function will be called if the API request fails. | `onErrorReturnFunction: (err: any) => { return err; }` |
+| `apiData`                        | The response data from the API call, which is returned once the API request is successful.<br/>***Note - These can be renamed accordingly. | `apiData: firstApiData` |
+| `loadingState`                   | A boolean indicating whether the API call is still loading or not.<br/>***Note - These can be renamed accordingly.| `loadingState: firstApiLoading` |
+| `refetchingApiFunction`          | A function that can be used to re-trigger the API call, usually in case of failure or to refresh or recall the api.<br/>***Note - These can be renamed accordingly.  | `refetchingApiFunction: firstRefetchFunction` |
+| `apiError`                       | Stores the error returned from the API request, if any.<br/>***Note - These can be renamed accordingly. | `apiError: firstApiError` |
+| `type`                           | An optional prop that specifies the type of request. It can either be `"API"` (default) for a standard API call or `"FORMDATA"` for handling form data requests. <br/>*But do not use this prop as it is still under working. | `type: "API"` |
+
+
+## Step 4: Refetching the API
+
+To refetch the API, use the `refetchingApiFunction` provided by the hook. This function allows you to re-trigger the API call when necessary or when runOnTimeOfScreenMount is false. You can call this function with or without conditional arguments.
+
+***Note***: The order of arguments is important — `loadingState`, `[payload]`, `customReturnFunction`, and `customErrorFunction`.
+
+### Example:
+
+In this step, we'll create a button that triggers the API refetch when pressed.
+
+```tsx
+<Button
+  title="Refetch API"
+  onPress={async () => {
+
+    // Trigger the API refetch
+    await refetchFunction(
+      true,                    // First parameter: Set to `true` or `false` to control the loading state.
+      [{ payload: "payload" }], // Second parameter: Provide any payload to be sent with the API request.
+      (data: any) => {         // Third parameter: Success callback to handle the response.
+        return data;           // Return the API data if needed.
+      },
+      (err: any) => {          // Fourth parameter: Error callback to handle any failure.
+        return err;            // Return the error if necessary.
+      }
+    );
+
+  }}
+/>
+```
+
+```tsx
+<Button
+  title="Refetch API"
+  onPress={async () => {
+
+    // Trigger the API refetch
+    await refetchFunction();
+
+  }}
+/>
+```
+
+## Authors
+
+- [@AakashThakur23102000](https://github.com/AakashThakur23102000)
+
+## 🚀 About Me
+I'm a react native developer.
+
+
+## Feedback
+
+If you have any feedback, please mail at aakashthakur20001972@gmail.com.
