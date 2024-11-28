@@ -1,4 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
+import { useApiHookContext } from './context/UseApiHookContextStore';
+
 
 // Parameter interface 
 interface useApiHookInterface {
@@ -23,6 +25,9 @@ export const useApiHook = ({
     onErrorReturnFunction,
 }: useApiHookInterface) => {
 
+    // context
+    const useApiHookContextData = useContext(useApiHookContext) || null;
+    
     // Loading state as a useState hook to trigger re-renders
     const [loadingState, setLoadingState] = useState(initialLoadingState);
     const [apiData, setApiData] = useState(null);
@@ -44,7 +49,12 @@ export const useApiHook = ({
     ) => {
         if (type === "API") {
             try {
-                var apiCallingFunctionObj = await apiCallingFunction(apiCallingFunctionQuery?.[0] || {});
+                if (apiCallingFunctionQuery?.[0]) {
+                    var apiCallingFunctionQueryOld = apiCallingFunctionQuery[0]
+                    apiCallingFunctionQueryOld["contextData"] = useApiHookContextData;
+                }
+                var apiCallingFunctionObj = await apiCallingFunction(apiCallingFunctionQueryOld || { contextData: useApiHookContextData });
+
                 var apiFetchingOptionsObj: any = {};
                 apiFetchingOptionsObj["method"] = apiCallingFunctionObj.method
                 apiFetchingOptionsObj["headers"] = apiCallingFunctionObj.customHeaders ?
@@ -122,7 +132,6 @@ export const useApiHook = ({
             }
 
         } else {
-
         }
 
     };

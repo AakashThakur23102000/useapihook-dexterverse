@@ -196,10 +196,10 @@ In this step, we'll create a button that triggers the API refetch when pressed.
       true,                    // First parameter: Set to `true` or `false` to control the loading state.
       [{ payload: "payload" }], // Second parameter: Provide any payload to be sent with the API request.
       (data: any) => {         // Third parameter: Success callback to handle the response.
-        return data;           // Return the API data if needed.
+        return data;           
       },
       (err: any) => {          // Fourth parameter: Error callback to handle any failure.
-        return err;            // Return the error if necessary.
+        return err;            
       }
     );
 
