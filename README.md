@@ -46,7 +46,6 @@ export const SECOND_API_FUNC = async (apiCallingFunctionQuery: any) => {
             code: 200,
             action: () => {
                 console.log("Api hit successfully.")
-                apiCallingFunctionQuery.navigation.navigate("DemoPage")
             }
         }],
         errorCodeWithAction: [{
@@ -63,14 +62,14 @@ export const SECOND_API_FUNC = async (apiCallingFunctionQuery: any) => {
 // Type for API response configuration
 type ApiFunctionTypes = {
     fullUrl: string;
-    method: 'GET' | 'POST' | 'PUT' | 'DELETE';
+    method: 'GET' | 'POST' | 'PUT' | 'DELETE' | "PATCH";
     token: string | null;
     customHeaders: Record<string, string> | null;
     successCodeWithAction: Array<{ code: number; action: () => void }> | null;
     errorCodeWithAction: Array<{ code: number; action: () => void }> | null;
 };
 ```
-## *** Note on Custom Headers
+### *** Note on Custom Headers
 
 If you're passing custom headers in the `customHeaders` field, **do not include the token** manually. The token will be added automatically by the hook when needed.
 
@@ -83,7 +82,47 @@ const customHeaders = {
 };
 ```
 
-## 3. Use the API Hook in Your Component
+## 3. UseApiHook Context Integration
+
+This project uses `UseApiHookContextStore` to manage API-related states and interactions seamlessly across the application. 
+It can also be used to access some useful hooks inside `ApiFunctions.ts` normal function that was create in Step - 2.
+<br/>Below is a guide to integrating and using this context.
+
+### Setup
+
+Integration in `index.js` or `app.tsx` where routes are handled.
+<br/>
+Wrap your app's NavigationContainer with the UseApiHookContextStore for context functionality. 
+<br/><br/>
+It can be then used in `apiCallingFunctionQuery` in the `ApiFunctions.ts`
+
+```typescript
+import UseApiHookContextStore from 'useapihook-dexterverse/context/UseApiHookContextStore';
+```
+```typescript
+<NavigationContainer>
+    <UseApiHookContextStore
+        initialProp={{
+          pageNotFoundFunc:()=>{navigation.navigate('PageNotFound')}
+        }}
+    >
+        <Stack.Navigator initialRouteName="AppHome">
+            <Stack.Screen name="AppHome" component={App} />
+            <Stack.Screen name="DemoPage" component={DemoPage} />
+            <Stack.Screen name="PageNotFound" component={PageNotFound} />
+        </Stack.Navigator>
+    </UseApiHookContextStore>
+</NavigationContainer>
+```
+
+
+
+### *** Note on UseApiHook Context Integration
+To ensure proper functionality of navigation in the application, please make sure to wrap `UseApiHookContextStore` inside either a `NavigationContainer` (for React Native) or a `BrowserRouter` (for React Web).
+<br/><br/>
+This ensures that navigation hooks such as `useNavigation` (React Native) or `useNavigate` (React Web) are properly integrated within your application as done in example above.
+
+## 4. Use the API Hook in Your Component
 
 After defining your API functions in `ApiFunctions.ts`, you can now use the `useApiHook` in your components to fetch data.
 
@@ -176,7 +215,7 @@ export default MyComponent;
 | `type`                           | An optional prop that specifies the type of request. It can either be `"API"` (default) for a standard API call or `"FORMDATA"` for handling form data requests. <br/>*But do not use this prop as it is still under working. | `type: "API"` |
 
 
-## Step 4: Refetching the API
+## 5. Refetching the API
 
 To refetch the API, use the `refetchingApiFunction` provided by the hook. This function allows you to re-trigger the API call when necessary or when runOnTimeOfScreenMount is false. You can call this function with or without conditional arguments.
 
