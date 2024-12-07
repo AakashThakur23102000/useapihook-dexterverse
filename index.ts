@@ -30,8 +30,8 @@ export const useApiHook = ({
     
     // Loading state as a useState hook to trigger re-renders
     const [loadingState, setLoadingState] = useState(initialLoadingState);
-    const [apiData, setApiData] = useState(null);
-    const [apiError, setApiError] = useState(null);
+    const [apiData, setApiData] = useState<null | any[]>(null);
+    const [apiError, setApiError] = useState<null | any[] | string | Error>(null);
 
 
     //some static values
