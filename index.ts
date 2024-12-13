@@ -27,9 +27,9 @@ export const useApiHook = ({
 
     // context
     const useApiHookContextData = useContext(useApiHookContext) || null;
-    
+
     // Loading state as a useState hook to trigger re-renders
-    const [loadingState, setLoadingState] = useState(initialLoadingState);
+    const [loadingState, setLoadingState] = useState(false);
     const [apiData, setApiData] = useState<null | any[]>(null);
     const [apiError, setApiError] = useState<null | any[] | string | Error>(null);
 
@@ -159,6 +159,9 @@ export const useApiHook = ({
     // Run the API call when the component mounts, if specified
     useEffect(() => {
         if (runOnTimeOfScreenMount) {
+            if (initialLoadingState !== loadingState) {
+                setLoadingState(initialLoadingState);
+            }
             apiFetching();
         }
     }, []);
