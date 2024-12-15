@@ -40,6 +40,11 @@ export const useApiHook = ({
         'Content-Type': 'application/json',
     };
 
+    const fetchHeadersForFormData = {
+        Accept: 'application/json',
+        "Content-Type": "multipart/form-data"
+    };
+
 
     // Function to call the API
     const apiFetching = async (
@@ -132,6 +137,108 @@ export const useApiHook = ({
             }
 
         } else {
+            try {
+                if (apiCallingFunctionQuery?.[0]) {
+                    var apiCallingFunctionQueryOld = apiCallingFunctionQuery[0]
+                    apiCallingFunctionQueryOld["contextData"] = useApiHookContextData;
+                }
+                var apiCallingFunctionObj = await apiCallingFunction(apiCallingFunctionQueryOld || { contextData: useApiHookContextData });
+
+                var apiFetchingOptionsObj: any = {};
+                apiFetchingOptionsObj["method"] = apiCallingFunctionObj.method
+                apiFetchingOptionsObj["headers"] = apiCallingFunctionObj.customHeaders ?
+                    apiCallingFunctionObj.customHeaders :
+                    fetchHeadersForFormData;
+                if (apiCallingFunctionObj.token) {
+                    apiFetchingOptionsObj["headers"]["Authorization"] = apiCallingFunctionObj.token;
+                }
+                if ((apiCallingFunctionObj.method !== "GET") && (apiCallingFunctionObj.method !== "DELETE")) {
+                    var dataArray = refetchApiPayload?.[0] || apiPayload?.[0] || {}
+                    const formData = new FormData();
+                    for (const key in dataArray) {
+                        if (Array.isArray(dataArray[key])) {
+                            dataArray[key].forEach((item: any) => {
+                                if (item.uri) {
+                                    const file = {
+                                        uri: item.uri,
+                                        type: item.type || 'application/octet-stream',
+                                        name: item.name || 'file',
+                                    };
+                                    formData.append(key, file as any);
+                                } else {
+                                    // If it's a plain object, you can JSON-stringify or handle it differently
+                                    formData.append(key, JSON.stringify(item));
+                                }
+                            });
+                        } else {
+                            formData.append(key, dataArray[key]);
+                        }
+                    }
+                    // adding it to header
+                    apiFetchingOptionsObj["body"] = formData;
+                }
+
+                // main api calling is done here using fetch
+                var apiResponseWithoutConverted = await fetch(apiCallingFunctionObj.fullUrl, apiFetchingOptionsObj)
+                var apiResponseAfterConverted = await apiResponseWithoutConverted.json();
+
+                if (apiResponseWithoutConverted.ok) {
+                    var finalResult;
+
+                    if (refetchApiCustomReturnFunction) {
+                        finalResult = await refetchApiCustomReturnFunction(apiResponseAfterConverted);
+                    } else {
+                        finalResult = await apiCustomReturnFunction(apiResponseAfterConverted);
+                    }
+                    if (apiCallingFunctionObj.successCodeWithAction) {
+                        for (const item of apiCallingFunctionObj.successCodeWithAction) {
+                            if (apiResponseWithoutConverted.status === item.code) {
+                                await item.action();
+                            }
+                        };
+                    }
+                    setApiData(finalResult); // Set the API data on success
+                    setApiError(null);       // Clear any previous error
+                } else {
+                    var finalError;
+                    if (refetchOnErrorReturnFunction) {
+                        finalError = await refetchOnErrorReturnFunction(apiResponseAfterConverted);
+                    } else {
+                        finalError = await onErrorReturnFunction(apiResponseAfterConverted);
+                    }
+
+                    if (apiCallingFunctionObj.errorCodeWithAction) {
+                        for (const item of apiCallingFunctionObj.errorCodeWithAction) {
+                            if (apiResponseWithoutConverted.status === item.code) {
+                                await item.action();
+                            }
+                        };
+                    }
+                    setApiError(finalError);
+                    setApiData(null);
+
+                }
+                setApiData(finalResult);
+
+            } catch (error: any) {
+                var finalError;
+                if (refetchOnErrorReturnFunction) {
+                    finalError = await refetchOnErrorReturnFunction(error);
+                } else {
+                    finalError = await onErrorReturnFunction(error);
+                }
+                setApiError(finalError)
+            }
+
+
+            finally {
+                setLoadingState((prevState) => {
+                    if (prevState !== false) {
+                        return false;
+                    }
+                    return prevState;
+                });
+            }
         }
 
     };
