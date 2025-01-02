@@ -1,5 +1,6 @@
 import { useState, useEffect, useContext } from 'react';
 import { useApiHookContext } from './context/UseApiHookContextStore';
+import { useApiHookThrottler } from './utils/useApiHookThrottler';
 
 
 // Parameter interface 
@@ -12,6 +13,7 @@ interface useApiHookInterface {
     onErrorReturnFunction: Function,
     runOnTimeOfScreenMount: boolean,
     initialLoadingState: boolean,
+    throttleTime?: number[] | null,
 }
 
 export const useApiHook = ({
@@ -21,6 +23,7 @@ export const useApiHook = ({
     apiPayload = [],
     runOnTimeOfScreenMount,
     initialLoadingState,
+    throttleTime = null,
     apiCustomReturnFunction,
     onErrorReturnFunction,
 }: useApiHookInterface) => {
@@ -249,17 +252,23 @@ export const useApiHook = ({
         refetchApiCustomReturnFunction?: Function | null,
         refetchOnErrorReturnFunction?: Function | null
     ) => {
-        if (refetchInitialLoadingState !== undefined) {
-            if (refetchInitialLoadingState !== loadingState) {
-                setLoadingState(refetchInitialLoadingState);
+        const isThrottled = useApiHookThrottler(
+            apiCallingFunction.name,
+            throttleTime !== null ? (throttleTime[0] ? throttleTime[0] : null) : null
+        );
+        if (!isThrottled) {
+            if (refetchInitialLoadingState !== undefined) {
+                if (refetchInitialLoadingState !== loadingState) {
+                    setLoadingState(refetchInitialLoadingState);
+                }
+            } else {
+                if (initialLoadingState !== loadingState) {
+                    setLoadingState(initialLoadingState);
+                }
             }
-        } else {
-            if (initialLoadingState !== loadingState) {
-                setLoadingState(initialLoadingState);
-            }
-        }
 
-        await apiFetching(refetchApiPayload, refetchApiCustomReturnFunction, refetchOnErrorReturnFunction);
+            await apiFetching(refetchApiPayload, refetchApiCustomReturnFunction, refetchOnErrorReturnFunction);
+        }
     }
 
 
