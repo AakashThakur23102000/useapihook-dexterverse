@@ -16,6 +16,15 @@ interface useApiHookInterface {
     throttleTime?: number[] | null,
 }
 
+interface useApiHookInterfaceRefetch {
+    refetchInitialLoadingState?: boolean,
+    refetchApiPayload?: any[],
+    refetchApiCallingFunctionQuery?: any[],
+    refetchApiCustomReturnFunction?: Function | null,
+    refetchOnErrorReturnFunction?: Function | null
+}
+
+
 export const useApiHook = ({
     apiCallingFunction,
     type = "API",
@@ -27,7 +36,7 @@ export const useApiHook = ({
     apiCustomReturnFunction,
     onErrorReturnFunction,
 }: useApiHookInterface) => {
-
+ 
     // context
     const useApiHookContextData = useContext(useApiHookContext) || null;
 
@@ -36,7 +45,7 @@ export const useApiHook = ({
     const [apiData, setApiData] = useState<null | any[]>(null);
     const [apiError, setApiError] = useState<null | any[] | string | Error>(null);
 
-
+    
     //some static values
     const fetchHeaders = {
         Accept: 'application/json',
@@ -52,16 +61,17 @@ export const useApiHook = ({
     // Function to call the API
     const apiFetching = async (
         refetchApiPayload?: any[],
+        refetchApiCallingFunctionQuery?: any[],
         refetchApiCustomReturnFunction?: Function | null,
         refetchOnErrorReturnFunction?: Function | null
     ) => {
         if (type === "API") {
             try {
-                if (apiCallingFunctionQuery?.[0]) {
-                    var apiCallingFunctionQueryOld = apiCallingFunctionQuery[0]
-                    apiCallingFunctionQueryOld["contextData"] = useApiHookContextData;
+                const queryToUse = refetchApiCallingFunctionQuery?.[0] || apiCallingFunctionQuery?.[0];
+                if (queryToUse) {
+                    queryToUse["contextData"] = useApiHookContextData;
                 }
-                var apiCallingFunctionObj = await apiCallingFunction(apiCallingFunctionQueryOld || { contextData: useApiHookContextData });
+                var apiCallingFunctionObj = await apiCallingFunction(queryToUse || { contextData: useApiHookContextData });
 
                 var apiFetchingOptionsObj: any = {};
                 apiFetchingOptionsObj["method"] = apiCallingFunctionObj.method
@@ -247,10 +257,13 @@ export const useApiHook = ({
     };
 
     const refetchingApiFunction = async (
-        refetchInitialLoadingState?: boolean,
-        refetchApiPayload: any[] = apiPayload,
-        refetchApiCustomReturnFunction?: Function | null,
-        refetchOnErrorReturnFunction?: Function | null
+        {
+            refetchInitialLoadingState = initialLoadingState,
+            refetchApiPayload = apiPayload,
+            refetchApiCallingFunctionQuery = apiCallingFunctionQuery,
+            refetchApiCustomReturnFunction = apiCustomReturnFunction,
+            refetchOnErrorReturnFunction = onErrorReturnFunction
+        }: useApiHookInterfaceRefetch = {}
     ) => {
         const isThrottled = useApiHookThrottler(
             apiCallingFunction.name,
@@ -267,7 +280,7 @@ export const useApiHook = ({
                 }
             }
 
-            await apiFetching(refetchApiPayload, refetchApiCustomReturnFunction, refetchOnErrorReturnFunction);
+            await apiFetching(refetchApiPayload, refetchApiCallingFunctionQuery, refetchApiCustomReturnFunction, refetchOnErrorReturnFunction);
         }
     }
 
