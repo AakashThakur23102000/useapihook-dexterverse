@@ -6,7 +6,7 @@ import { useApiHookThrottler } from './utils/useApiHookThrottler';
 // Parameter interface 
 interface useApiHookInterface {
     apiCallingFunction: Function,
-    apiCallingFunctionQuery?: any[],
+    apiQuery?: any[],
     type?: "API" | "FORMDATA",
     apiPayload: any[],
     apiCustomReturnFunction: Function,
@@ -19,7 +19,7 @@ interface useApiHookInterface {
 interface useApiHookInterfaceRefetch {
     refetchInitialLoadingState?: boolean,
     refetchApiPayload?: any[],
-    refetchApiCallingFunctionQuery?: any[],
+    refetchApiQuery?: any[],
     refetchApiCustomReturnFunction?: Function | null,
     refetchOnErrorReturnFunction?: Function | null
 }
@@ -28,7 +28,7 @@ interface useApiHookInterfaceRefetch {
 export const useApiHook = ({
     apiCallingFunction,
     type = "API",
-    apiCallingFunctionQuery = [],
+    apiQuery = [],
     apiPayload = [],
     runOnTimeOfScreenMount,
     initialLoadingState,
@@ -61,13 +61,13 @@ export const useApiHook = ({
     // Function to call the API
     const apiFetching = async (
         refetchApiPayload?: any[],
-        refetchApiCallingFunctionQuery?: any[],
+        refetchApiQuery?: any[],
         refetchApiCustomReturnFunction?: Function | null,
         refetchOnErrorReturnFunction?: Function | null
     ) => {
         if (type === "API") {
             try {
-                const queryToUse = refetchApiCallingFunctionQuery?.[0] || apiCallingFunctionQuery?.[0];
+                const queryToUse = refetchApiQuery?.[0] || apiQuery?.[0];
                 if (queryToUse) {
                     queryToUse["contextData"] = useApiHookContextData;
                 }
@@ -151,8 +151,8 @@ export const useApiHook = ({
 
         } else {
             try {
-                if (apiCallingFunctionQuery?.[0]) {
-                    var apiCallingFunctionQueryOld = apiCallingFunctionQuery[0]
+                if (apiQuery?.[0]) {
+                    var apiCallingFunctionQueryOld = apiQuery[0]
                     apiCallingFunctionQueryOld["contextData"] = useApiHookContextData;
                 }
                 var apiCallingFunctionObj = await apiCallingFunction(apiCallingFunctionQueryOld || { contextData: useApiHookContextData });
@@ -260,7 +260,7 @@ export const useApiHook = ({
         {
             refetchInitialLoadingState = initialLoadingState,
             refetchApiPayload = apiPayload,
-            refetchApiCallingFunctionQuery = apiCallingFunctionQuery,
+            refetchApiQuery = apiQuery,
             refetchApiCustomReturnFunction = apiCustomReturnFunction,
             refetchOnErrorReturnFunction = onErrorReturnFunction
         }: useApiHookInterfaceRefetch = {}
@@ -280,7 +280,7 @@ export const useApiHook = ({
                 }
             }
 
-            await apiFetching(refetchApiPayload, refetchApiCallingFunctionQuery, refetchApiCustomReturnFunction, refetchOnErrorReturnFunction);
+            await apiFetching(refetchApiPayload, refetchApiQuery, refetchApiCustomReturnFunction, refetchOnErrorReturnFunction);
         }
     }
 
