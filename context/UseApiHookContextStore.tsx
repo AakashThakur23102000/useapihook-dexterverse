@@ -6,7 +6,7 @@ interface useApiHookContextType {
 }
 interface UseApiHookContextProps {
     children: ReactNode;
-    initialProp: {
+    initialProp?: {
         [key: string]: any;
     };
 }
