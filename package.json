@@ -21,5 +21,8 @@
   "bugs": {
     "url": "https://github.com/AakashThakur23102000/useapihook-dexterverse/issues"
   },
-  "homepage": "https://github.com/AakashThakur23102000/useapihook-dexterverse#readme"
+  "homepage": "https://github.com/AakashThakur23102000/useapihook-dexterverse#readme",
+  "peerDependencies": {
+    "react": "^18.0.0"
+  }
 }
