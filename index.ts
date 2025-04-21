@@ -36,16 +36,16 @@ export const useApiHook = ({
     apiCustomReturnFunction,
     onErrorReturnFunction,
 }: useApiHookInterface) => {
- 
+
     // context
     const useApiHookContextData = useContext(useApiHookContext) || null;
 
     // Loading state as a useState hook to trigger re-renders
     const [loadingState, setLoadingState] = useState(false);
-    const [apiData, setApiData] = useState<null | any[]>(null);
+    const [apiData, setApiData] = useState<null | any>(null);
     const [apiError, setApiError] = useState<null | any[] | string | Error>(null);
 
-    
+
     //some static values
     const fetchHeaders = {
         Accept: 'application/json',
