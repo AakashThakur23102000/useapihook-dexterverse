@@ -23,6 +23,6 @@
   },
   "homepage": "https://github.com/AakashThakur23102000/useapihook-dexterverse#readme",
   "peerDependencies": {
-    "react": "^18.0.0"
+    "react": "*"
   }
 }
