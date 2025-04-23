@@ -11,8 +11,8 @@ interface UseApiHookContextProps {
     };
 }
 
-export const useApiHookContext = createContext<useApiHookContextType | null>(null);
-function UseApiHookContextStore({
+export const UseApiHookContext = createContext<useApiHookContextType | null>(null);
+function UseApiHookProvider({
     children,
     initialProp = {}
 }: UseApiHookContextProps) {
@@ -20,10 +20,10 @@ function UseApiHookContextStore({
 
     const [store, setStore] = useState<any>(initialProp || {});
     return (
-        <useApiHookContext.Provider value={{ store, setStore }}>
+        <UseApiHookContext.Provider value={{ store, setStore }}>
             {children}
-        </useApiHookContext.Provider>
+        </UseApiHookContext.Provider>
     );
 }
 
-export default UseApiHookContextStore;
+export default UseApiHookProvider;

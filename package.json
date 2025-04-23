@@ -17,12 +17,9 @@
     "apiHook"
   ],
   "author": "AakashThakur23102000",
-  "license": "Apache-2.0",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/AakashThakur23102000/useapihook-dexterverse/issues"
   },
-  "homepage": "https://github.com/AakashThakur23102000/useapihook-dexterverse#readme",
-  "peerDependencies": {
-    "react": "*"
-  }
+  "homepage": "https://github.com/AakashThakur23102000/useapihook-dexterverse#readme"
 }
